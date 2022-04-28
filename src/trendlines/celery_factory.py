@@ -79,7 +79,7 @@ def config_from_pyfile(app, filename, silent=False):
     except IOError as e:
         if silent and e.errno in(errno.ENOENT, errno.EISDIR, errno.ENOTDIR):
             return False
-        e.strerror = "Unable to load config file (%s)" % e.strerror
+        e.strerror = f"Unable to load config file ({e.strerror})"
         raise
 
     # Remove any hidden attributes: __ and _
@@ -87,7 +87,7 @@ def config_from_pyfile(app, filename, silent=False):
         if k.startswith("_"):
             del d.__dict__[k]
 
-    logger.debug("Config values: %s" % d.__dict__)
+    logger.debug(f"Config values: {d.__dict__}")
     app.conf.update(d.__dict__)
     return True
 
@@ -126,9 +126,9 @@ def create_celery():
             data = self.request.recv(1024).strip()
             try:
                 parsed = utils.parse_socket_data(data)
-                logger.debug("TCP: {}".format(parsed))
+                logger.debug(f"TCP: {parsed}")
             except ValueError:
-                logger.warn("TCP: Failed to parse `%s`." % data)
+                logger.warn(f"TCP: Failed to parse `{data}`.")
                 return
 
             try:

@@ -22,7 +22,7 @@ class ErrorResponseType(Enum):
     @property
     def url(self):
         base = "https://trendlines.readthedocs.io/en/latest/error-responses"
-        return base + "#" + str(self)
+        return f"{base}#{str(self)}"
 
 
 class ErrorResponse(object):
@@ -35,22 +35,22 @@ class ErrorResponse(object):
 
     @classmethod
     def metric_not_found(cls, name):
-        detail = "The metric '{}' does not exist".format(name)
+        detail = f"The metric '{name}' does not exist"
         return error_response(404, ErrorResponseType.NOT_FOUND, detail)
 
     @classmethod
     def datapoint_not_found(cls, datapoint_id):
-        detail = "The datapoint '{}' does not exist".format(datapoint_id)
+        detail = f"The datapoint '{datapoint_id}' does not exist"
         return error_response(404, ErrorResponseType.NOT_FOUND, detail)
 
     @classmethod
     def metric_has_no_data(cls, name):
-        detail = "No data exists for metric '{}'.".format(name)
+        detail = f"No data exists for metric '{name}'."
         return error_response(404, ErrorResponseType.NO_DATA, detail)
 
     @classmethod
     def metric_already_exists(cls, name):
-        detail = "The metric '{}' already exists.".format(name)
+        detail = f"The metric '{name}' already exists."
         return error_response(409, ErrorResponseType.ALREADY_EXISTS, detail)
 
     @classmethod
@@ -63,9 +63,9 @@ class ErrorResponse(object):
     @classmethod
     def missing_required_key(cls, key):
         if isinstance(key, (list, tuple)):
-            detail = "Missing one of required keys: {}".format(key)
+            detail = f"Missing one of required keys: {key}"
         else:
-            detail = "Missing required key '{}'".format(key)
+            detail = f"Missing required key '{key}'"
         return error_response(400, ErrorResponseType.INVALID_REQUEST, detail)
 
 
@@ -185,5 +185,5 @@ def error_response(http_status, type_, detail):
     """
     title = type_.name
     resp = Rfc7807ErrorResponse(type_.url, title, http_status, detail)
-    logger.warning("API error %s: %s" % (title, detail))
+    logger.warning(f"API error {title}: {detail}")
     return resp.as_response(), http_status

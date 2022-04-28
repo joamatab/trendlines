@@ -58,10 +58,13 @@ def add_metric(name, units=None, lower_limit=None, upper_limit=None):
         logger.error(msg.format(type(lower_limit), type(upper_limit)))
         raise TypeError("upper_limit and lower_limit must be numerics or None.")
 
-    if lower_limit is not None and upper_limit is not None:
-        if upper_limit <= lower_limit:
-            logger.error("upper_limit not greater than lower_limit.")
-            raise ValueError("upper_limit must be greater than lower_limit")
+    if (
+        lower_limit is not None
+        and upper_limit is not None
+        and upper_limit <= lower_limit
+    ):
+        logger.error("upper_limit not greater than lower_limit.")
+        raise ValueError("upper_limit must be greater than lower_limit")
 
     metric, created = Metric.get_or_create(
         name=name,
@@ -102,12 +105,11 @@ def insert_datapoint(metric, value, timestamp=None):
         logger.debug("Timestamp not given, using current time.")
         timestamp = datetime.now(timezone.utc).timestamp()
 
-    new = DataPoint.create(
+    return DataPoint.create(
         metric=metric,
         value=value,
         timestamp=timestamp,
     )
-    return new
 
 
 def get_data(metric):
@@ -127,8 +129,7 @@ def get_data(metric):
     """
     logger.debug("Querying data for '%s'" % metric)
     metric = Metric.get(Metric.name == metric)
-    data = DataPoint.select().where(DataPoint.metric == metric.metric_id)
-    return data
+    return DataPoint.select().where(DataPoint.metric == metric.metric_id)
 
 def get_recent_data(metric, age):
     """
@@ -149,12 +150,10 @@ def get_recent_data(metric, age):
     metric = Metric.get(Metric.name == metric)
     now = datetime.now(timezone.utc).timestamp()
 
-    data = DataPoint.select().where(
+    return DataPoint.select().where(
         (DataPoint.metric == metric.metric_id)
         & (DataPoint.timestamp > (now - age))
     )
-
-    return data
 
 
 def get_metrics():
@@ -181,8 +180,7 @@ def get_units(metric):
     -------
     units : str
     """
-    units = Metric.get(Metric.name == metric).units
-    return units
+    return Metric.get(Metric.name == metric).units
 
 
 def get_datapoints():
@@ -213,7 +211,7 @@ def get_datapoint(datapoint_id):
     datapoint : :class:`orm.DataPoint` or None
         ``None`` if the item isn't found.
     """
-    logger.debug("Querying datapoint: %s" % datapoint_id)
+    logger.debug(f"Querying datapoint: {datapoint_id}")
     return DataPoint.get_by_id(datapoint_id)
 
 
@@ -249,7 +247,7 @@ def update_datapoint(datapoint, metric=None, value=None, timestamp=None):
     Metric.DoesNotExist : :class:`peewee.DoesNotExist`
         if the ``metric`` is not found.
     """
-    logger.debug("Updating datapoint: %s" % datapoint)
+    logger.debug(f"Updating datapoint: {datapoint}")
 
     # Shortcut the uncommon case where both things are None
     if all(x is None for x in (metric, value, timestamp)):
@@ -310,7 +308,7 @@ def delete_datapoint(datapoint):
     DataPointDoesNotExist : :class:`peewee.DoesNotExist`
         if the ``datapoint`` or ``datapoint_id`` is not found.
     """
-    logger.debug("Deleting datapoint: %s" % datapoint)
+    logger.debug(f"Deleting datapoint: {datapoint}")
 
     if isinstance(datapoint, int):
         datapoint = get_datapoint(datapoint)

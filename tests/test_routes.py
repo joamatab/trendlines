@@ -24,8 +24,8 @@ def metric_url(metric_id=None):
     "/api/v1/metric/5"
     """
     if metric_id is not None:
-        return API_BASE + "/metric/{}".format(metric_id)
-    return API_BASE + "/metric"
+        return API_BASE + f"/metric/{metric_id}"
+    return f"{API_BASE}/metric"
 
 
 def datapoint_url(datapoint_id=None):
@@ -40,8 +40,8 @@ def datapoint_url(datapoint_id=None):
     "/api/v1/datapoint/5"
     """
     if datapoint_id is not None:
-        return API_BASE + "/datapoint/{}".format(datapoint_id)
-    return API_BASE + "/datapoint"
+        return API_BASE + f"/datapoint/{datapoint_id}"
+    return f"{API_BASE}/datapoint"
 
 
 def test_index(client):
@@ -99,7 +99,7 @@ def test_api_get_data_as_json(client, populated_db):
     assert rv.status_code == 200
     assert rv.is_json
     d = rv.get_json()
-    assert d['units'] == None
+    assert d['units'] is None
     d = d['rows']
     assert d[0]['n'] == 0
     assert d[0]['value'] == 15
@@ -111,7 +111,7 @@ def test_api_get_data_by_id(client, populated_db):
     assert rv.status_code == 200
     assert rv.is_json
     d = rv.get_json()
-    assert d['units'] == None
+    assert d['units'] is None
     d = d['rows']
     assert d[0]['n'] == 0
     assert d[0]['value'] == 15
@@ -278,7 +278,7 @@ class TestDataPointById(object):
         # Ensure that everything *except what as given in data* is the same.
         assert old != new
         for k, v in old.items():
-            if k in data.keys():
+            if k in data:
                 assert old[k] != new[k]
             else:
                 assert old[k] == new[k]

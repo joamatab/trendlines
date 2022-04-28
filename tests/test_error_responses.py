@@ -23,9 +23,7 @@ def rfc_object():
     )
 
 
-@pytest.mark.parametrize("value",
-    [item for item in error_responses.ErrorResponseType]
-)
+@pytest.mark.parametrize("value", list(error_responses.ErrorResponseType))
 def test_error_response_type_enum(value):
     assert "_" not in str(value)
     assert str(value).islower()
@@ -88,10 +86,7 @@ def test_rfc_error_response_content_type(rfc_object):
     (ErrorResponse.no_data, None),
 ])
 def test_error_response_class_methods(app_context, caplog, method, args):
-    if args is None:
-        rv = method()
-    else:
-        rv = method(*args)
+    rv = method() if args is None else method(*args)
     assert isinstance(rv, tuple)
     assert len(rv) == 2
     assert rv[0].is_json

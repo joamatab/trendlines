@@ -56,13 +56,7 @@ def get_metric_parent(metric):
     "foo.bar.baz"
     """
     s = metric.split(".")
-    if len(s) == 1:
-        # top-level item. parent is "#" (root)
-        parent = "#"
-    else:
-        parent = ".".join(s[:-1])
-
-    return parent
+    return "#" if len(s) == 1 else ".".join(s[:-1])
 
 
 def format_metric_for_jstree(metric):
@@ -85,13 +79,12 @@ def format_metric_for_jstree(metric):
     """
     metric_name = metric.name
     parent = get_metric_parent(metric_name)
-    jstree_node = {
+    return {
         "id": metric_name,
         "parent": parent,
         "text": metric_name,
         "metric_id": metric.metric_id,
     }
-    return jstree_node
 
 
 def build_jstree_data(metrics):
@@ -233,9 +226,7 @@ def parse_socket_data(data):
     except IndexError:
         time = int(datetime.now(timezone.utc).timestamp())
 
-    d = {"metric": metric, "value": value, "time": time}
-
-    return d
+    return {"metric": metric, "value": value, "time": time}
 
 
 def backup_file(path, ts_format="%Y%m%d_%H%M%S"):
@@ -255,7 +246,7 @@ def backup_file(path, ts_format="%Y%m%d_%H%M%S"):
     backup_file : :class:`pathlib.Path`
         The path to the newly created backup file.
     """
-    backup_file = "{}.{}".format(path, datetime.now().strftime(ts_format))
+    backup_file = f"{path}.{datetime.now().strftime(ts_format)}"
     backup_file = Path(backup_file)
     shutil.copy(str(path), str(backup_file))
     return backup_file

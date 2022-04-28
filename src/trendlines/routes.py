@@ -110,7 +110,7 @@ class Data(MethodView):
           time: integer or missing
         """
         data = request.get_json()
-        logger.debug("Received POST /api/v1/data: {}".format(data))
+        logger.debug(f"Received POST /api/v1/data: {data}")
 
         try:
             metric = data['metric']
@@ -140,7 +140,7 @@ class DataByName(MethodView):
         metric : str or int
             The metric name or the metric internal id (int) to get data for.
         """
-        logger.debug("GET /api/v1/data/%s" % metric)
+        logger.debug(f"GET /api/v1/data/{metric}")
 
         # Support both metric_id and metric_name
         try:

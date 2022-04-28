@@ -132,11 +132,10 @@ def create_db(name):
         if file_exists:
             msg = ("Database file %s exists, but we're unable to connect."
                    " Perhaps the permissions are incorrect?")
-            logger.error(msg % full_path)
         else:
             msg = ("Unable to create %s. Perhaps the parent folder is missing"
                    " or permissions are incorrect?")
-            logger.error(msg % full_path)
+        logger.error(msg % full_path)
         logger.error("Unable to create/open database file '%s'" % full_path)
         raise
 
@@ -145,7 +144,7 @@ def create_db(name):
     if file_exists:
         # Create a backup before doing anything.
         backup_file = utils.backup_file(full_path)
-        logger.debug("Created database backup file: {}".format(backup_file))
+        logger.debug(f"Created database backup file: {backup_file}")
 
     # This will edit the database file, creating the `migration_history`
     # table if needed. Hence why we do it *after* the backup.
@@ -173,11 +172,9 @@ def create_db(name):
     needs_migrations = len(manager.diff) > 0
 
     if needs_migrations:
-        logger.info("Missing migrations: {}".format(manager.diff))
+        logger.info(f"Missing migrations: {manager.diff}")
 
-        # Apply the migrations
-        success = manager.upgrade()
-        if success:
+        if success := manager.upgrade():
             logger.info("Successfully applied database migrations.")
         elif file_exists:
             # revert our changes by restoring the backup
@@ -199,7 +196,7 @@ def create_db(name):
         # existed, and if the file already existed then a backup was made.
         # Thus we don't need to check for FileNotFoundError.
         backup_file.unlink()
-        logger.debug("Removed superfluous backup file: %s" % backup_file)
+        logger.debug(f"Removed superfluous backup file: {backup_file}")
 
     # Make sure to close the database if things went well.
     db.close()

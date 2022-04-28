@@ -132,7 +132,7 @@ def test_create_db_failure(broken_db, caplog):
     orm.create_db(str(broken_db))
 
     # Make sure our original file and backup files exist, and are the same
-    backup_file = Path("{}.{}".format(str(broken_db), "20190228_150202"))
+    backup_file = Path(f"{str(broken_db)}.20190228_150202")
     assert broken_db.exists()
     assert backup_file.exists()
     assert _hash_file(broken_db) == _hash_file(backup_file)

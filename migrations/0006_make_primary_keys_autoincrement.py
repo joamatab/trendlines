@@ -76,11 +76,11 @@ DROP TABLE "metric_temp";
 
 def upgrade(migrator):
     for line in UPGRADE.split(";"):
-        sql = line + ";"    # not really needed, but gives me warm fuzzies.
+        sql = f"{line};"
         migrator.execute_sql(sql)
 
 
 def downgrade(migrator):
     for line in DOWNGRADE.split(";"):
-        sql = line + ";"    # not really needed, but gives me warm fuzzies.
+        sql = f"{line};"
         migrator.execute_sql(sql)

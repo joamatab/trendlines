@@ -83,7 +83,7 @@ def test_migration_0005_to_0006(db_0005_with_data):
     assert len(data_0005) != 0
     # Make sure we do not have migration 0006 applied.
     msg = "Migration 0006 applied when it shouldn't be."
-    assert not any("0006" in m[1] for m in migrations), msg
+    assert all("0006" not in m[1] for m in migrations), msg
 
     # Then upgrade to 0006
     # Note: we can't use manager.upgrade, as that doesn't reproduce the issue
@@ -98,7 +98,7 @@ def test_migration_0005_to_0006(db_0005_with_data):
 
     # Ensure that migration 0006 *is* applied.
     msg = "Migration 0006 is not applied, it should be."
-    assert any(["0006" in m[1] for m in migrations]), msg
+    assert any("0006" in m[1] for m in migrations), msg
 
     # And that data still matches.
     assert len(metric_0006) != 0
@@ -138,7 +138,7 @@ def test_migration_0006_to_0005(db_0006_with_data):
 
     # Ensure that migration 0006 *is not* applied.
     msg = "Migration 0006 applied when it shouldn't be."
-    assert not any("0006" in m[1] for m in migrations), msg
+    assert all("0006" not in m[1] for m in migrations), msg
 
     # And that data still matches.
     assert len(metric_0005) != 0
